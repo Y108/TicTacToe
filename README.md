@@ -7,6 +7,6 @@ It works on my computer.
 
 ---------------
 
-Newfound wisdom:
+### Newfound wisdom:
 
 Do not start a project past 3 a.m. , even if it's simple.
