@@ -1,7 +1,7 @@
-# TicTacToe
+# Tic Tac Toe
 Console based Tic Tac Toe game
 
-Didn't bother to fix a few obvious provblems and rewrite some simple things, it's almost 5 a.m. and I'm dying
+Didn't bother to fix a few obvious problems and rewrite some simple things, it's almost 5 a.m. and I'm dying.
 
 ---------------
 
