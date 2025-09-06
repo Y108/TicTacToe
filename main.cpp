@@ -48,7 +48,7 @@ int main() {
             ++roundCounter;
         }
         std::cout<<'\n';
-        std::cout<<"Would you like to play another round? ( Y / N )"<<std::endl;
+        std::cout<<"Would you like to play another game? ( Y / N )"<<std::endl;
         while (true) {
             std::cin >> answer;
             if (answer == "Y" || answer == "y" || answer == "N" || answer == "n") {
