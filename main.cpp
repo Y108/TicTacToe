@@ -20,12 +20,11 @@ int main() {
                 std::cout<<"Player 2 won the game!"<<std::endl;
                 break;
             }
-            if (roundCounter % 2 == 0) {
-                std::cout<<'\n'<<"Player 1's turn :"<<std::endl;
-            }
-            else {
-                std::cout<<'\n'<<"Player 2's turn :"<<std::endl;
-            }
+            
+            (roundCounter % 2 == 0)?
+            (std::cout<<'\n'<<"Player 1's turn :"<<std::endl):
+            (std::cout<<'\n'<<"Player 2's turn :"<<std::endl);
+            
             while (true) {
                 std::cin>>inputPosition;
                 if (inputValid(inputPosition) && !positionOccupied(inputPosition)) {
