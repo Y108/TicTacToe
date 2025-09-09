@@ -39,23 +39,25 @@ inline std::string positionToIndex(const std::string &position) {
 }
 
 inline bool inputValid(const std::string &input) {
-    if (input.size() == 2) {
-        bool b_strChar2 = false;
-        bool b_strChar1 = false;
-        for (const char &c : positionValues) {
-            if (std::toupper(input[0])==c) {
-                b_strChar1 = true;
-            }
-            if (std::toupper(input[1])==c) {
-                b_strChar2 = true;
-            }
-        }
-        if (b_strChar1-b_strChar2==0) {
-            return true;
-        }
+    if (input.size() != 2 ||
+        std::isalpha(input[0]) && std::isalpha(input[1]) ||
+        std::isdigit(input[0]) && std::isdigit(input[1])) {
         return false;
     }
-    return false;
+
+    bool strChar1_valid = false;
+    bool strChar2_valid = false;
+
+    for (const char &c : positionValues) {
+        if (std::toupper(input[0])==c) {
+            strChar1_valid = true;
+        }
+        if (std::toupper(input[1])==c) {
+            strChar2_valid = true;
+        }
+    }
+
+    return strChar1_valid && strChar2_valid;
 }
 
 inline bool positionOccupied(const std::string &position) {
