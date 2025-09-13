@@ -1,64 +1,47 @@
-#include <iostream>
-#include <string>
-#include "func.h"
+#include <cmath>
 
-std::string inputPosition;
-std::string answer;
+#include "func.h"
 
 int main() {
     while (true) {
         //Main loop
         while (true){
             printGrid();
-            if (playerWon(1)) {
+
+            if (playerWon(roundCounter % 2)) {
                 std::cout<<'\n';
-                std::cout<<"Player 1 won the game!"<<std::endl;
+                std::cout<<"Player "<< (roundCounter % 2 == 1 ?"1" :"2") <<" won the game!"<<std::endl;
                 break;
             }
-            if (playerWon(2)) {
-                std::cout<<'\n';
-                std::cout<<"Player 2 won the game!"<<std::endl;
+            if (checkTie()) {
+                std::cout<<"Tie!"<<std::endl;
                 break;
             }
-            
             (roundCounter % 2 == 0)?
             (std::cout<<'\n'<<"Player 1's turn :"<<std::endl):
             (std::cout<<'\n'<<"Player 2's turn :"<<std::endl);
-            
+
             while (true) {
                 std::cin>>inputPosition;
+
                 if (inputValid(inputPosition) && !positionOccupied(inputPosition)) {
                     if (roundCounter % 2 == 0) {
                         placeMark(1, inputPosition);
-                        playerWon(1);
+                        break;
                     }
-                    else {
-                        placeMark(2, inputPosition);
-                        playerWon(2);
-                    }
+                    placeMark(2, inputPosition);
                     break;
                 }
                 std::cout<<"Invalid input or position already occupied! Please try again:"<<std::endl;
             }
-            if (roundCounter == 9) {
-                std::cout<<"Tie!"<<std::endl;
-            }
-            system("CLS");
             ++roundCounter;
         }
-        std::cout<<'\n';
-        std::cout<<"Would you like to play another game? ( Y / N )"<<std::endl;
-        while (true) {
-            std::cin >> answer;
-            if (answer == "Y" || answer == "y" || answer == "N" || answer == "n") {
-                if (answer == "Y" || answer == "y") {
-                    resetGame();
-                    system("CLS");
-                    break;
-                }
-                return 0;
-            }
-            std::cout<<"Invalid input!"<<std::endl;
+        if (continueYoN()) {
+            std::cout<<"Playing another round!"<<std::endl;
+            resetGame();
+        }
+        else {
+            break;
         }
     }
 }
