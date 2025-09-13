@@ -5,14 +5,20 @@
 #include <string>
 #include <cctype>
 #include <algorithm>
+#include <windows.h>
+
+inline COORD origin(0,0);
+inline COORD postClearPosition(0, 9);
 
 inline int roundCounter = 0;
 
 inline char grid[3][3] = {{' ',' ',' '},{' ',' ',' '},{' ',' ',' '}},
             positionValues[6] = {'A','B','C','1','2','3'};
 
+inline std::string inputPosition;
+
 inline bool playerWon(const int &player) {
-    char playerSymbol = (player == 1) ? 'X' : 'O';
+    const char playerSymbol = (player == 1) ? 'X' : 'O';
     for (int i = 0; i < 3; ++i) {
         if (grid[i][0] == playerSymbol && grid[i][1] == playerSymbol && grid[i][2] == playerSymbol) return true;
         if (grid[0][i] == playerSymbol && grid[1][i] == playerSymbol && grid[2][i] == playerSymbol) return true;
@@ -25,64 +31,47 @@ inline bool playerWon(const int &player) {
 
 inline std::string positionToIndex(const std::string &position) {
     std::string temp = position;
-    // Val1 : difference between ascii values '0' and 'A'
-    // Which converts A,B,C to 0,1,2
-    constexpr char Val1 = 0x11;
-    constexpr char Val2 = 0x01;
+    /* 0x11 : difference between ascii values '0' and 'A'
+       Which converts A,B,C to 0,1,2 */
     if (std::isdigit(position[0])) {
-        std::ranges::reverse(temp);
+        std::swap(temp[0],temp[1]);
     }
-    temp[0] = std::toupper(temp[0]);
-    temp[0] = temp[0]-Val1;
-    temp[1] = temp[1]-Val2;
+    temp[0] = std::toupper(temp[0])-0x11;
+    temp[1] = temp[1]-0x01;
     return temp;
 }
 
 inline bool inputValid(const std::string &input) {
     if (input.size() != 2 ||
+        !(std::isalnum(input[0]) && std::isalnum(input[1])) ||
         std::isalpha(input[0]) && std::isalpha(input[1]) ||
         std::isdigit(input[0]) && std::isdigit(input[1])) {
         return false;
     }
-
-    bool strChar1_valid = false;
-    bool strChar2_valid = false;
-
-    for (const char &c : positionValues) {
-        if (std::toupper(input[0])==c) {
-            strChar1_valid = true;
-        }
-        if (std::toupper(input[1])==c) {
-            strChar2_valid = true;
-        }
-    }
-
-    return strChar1_valid && strChar2_valid;
+    return std::ranges::find(positionValues, input[0]) != std::end(positionValues) &&
+           std::ranges::find(positionValues, input[1]) != std::end(positionValues);
 }
 
+
 inline bool positionOccupied(const std::string &position) {
-    const std::string indices = positionToIndex(position);
-    const int pos1 = indices[0]-'0';
-    const int pos2 = indices[1]-'0';
-    if (grid[pos1][pos2] == 'X' || grid[pos1][pos2] == 'O') {
+    if (grid[positionToIndex(position)[0]-'0'][positionToIndex(position)[1]-'0'] == 'X' ||
+        grid[positionToIndex(position)[0]-'0'][positionToIndex(position)[1]-'0'] == 'O') {
         return true;
     }
     return false;
 }
 
 inline void placeMark(const int &player, const std::string &position) {
-    const std::string indices = positionToIndex(position);
-    const int pos1 = indices[0]-'0';
-    const int pos2 = indices[1]-'0';
     if (player==1) {
-        grid[pos1][pos2] = 'X';
+        grid[positionToIndex(position)[0]-'0'][positionToIndex(position)[1]-'0'] = 'X';
     }
     else {
-        grid[pos1][pos2] = 'O';
+        grid[positionToIndex(position)[0]-'0'][positionToIndex(position)[1]-'0'] = 'O';
     }
 }
 
 inline void printGrid() {
+    SetConsoleCursorPosition (GetStdHandle(STD_OUTPUT_HANDLE) ,origin); // move cursor to top left of screen to overwrite previous grid.
     std::cout << '\n';
     std::cout << "         1     2     3" << std::endl;
     std::cout << "            ,     ," << std::endl;
@@ -92,6 +81,31 @@ inline void printGrid() {
     std::cout << "       -----|-----|-----"<<std::endl;
     std::cout << "   C     " << grid[2][0] << "  |  " << grid[2][1] << "  |  " << grid[2][2] << std::endl;
     std::cout << "            '     '" << std::endl;
+    for (int i = 0; i<20; ++i){ // clear "Wrong input" lines (up to a certain point)
+        std::cout<<"                                                                                "<<'\n';
+    }
+    SetConsoleCursorPosition (GetStdHandle(STD_OUTPUT_HANDLE) ,postClearPosition); // move cursor to where it would have been prior to the empty lines.
+}
+
+inline bool continueYoN() {
+    std::string answer;
+    std::cout<<"\nWould you like to play another round? ( Y / N )"<<std::endl;
+    while (true) {
+        std::cin >> answer;
+        if (answer == "Y" || answer == "y") {
+            return true;
+        }
+        if (answer == "N" || answer == "n") {
+            return false;
+        }
+        std::cout<<"Invalid input!"<<std::endl;
+    }
+}
+
+inline bool checkTie() {
+    return !(std::ranges::find(grid[0], ' ') != std::end(grid[0]) ||
+             std::ranges::find(grid[1], ' ') != std::end(grid[1]) ||
+             std::ranges::find(grid[2], ' ') != std::end(grid[2])) ;
 }
 
 inline void resetGame() {
